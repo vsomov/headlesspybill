@@ -45,7 +45,7 @@ class ClientDatabase(object):
     def printDB(self):
         for clientName, client in self.database.iteritems():
             print "client: %s(%s) - Price %.2f Stock %d Value %.2f" % \
-                (client.name, client.code, client.price, client.stock, client.value())
+                (client.name, client.code, client.balance, client.stock, client.value())
 
     def addClient(self):
         print "Input client name"
@@ -54,31 +54,42 @@ class ClientDatabase(object):
         print "Input client code"
         clientCode = raw_input()
 
-        clientPrice = self.inputclientPrice()
-        clientStock = self.inputclientStock()
+        clientBalance = self.inputClientBalance()
+        clientBalanceLimit = self.inputClientBalanceLimit()
+        clientLastPayment = self.inputClientLastPayment()
 
-        self.database[clientName] = Client(clientName, clientCode, clientPrice, clientStock)
+        self.database[clientName] = Client(clientName, clientCode, clientBalance, clientBalanceLimit, clientLastPayment)
         self.save()
 
-    def inputClientPrice(self):
-        clientPrice = None
-        while not clientPrice:
+    def inputClientBalance(self):
+        clientBalance = None
+        while not clientBalance:
             try:
-                print "Input client price"
-                clientPrice = float(raw_input())
+                print "Input client balance"
+                clientBalance = float(raw_input())
             except ValueError:
-                clientPrice = None
-        return clientPrice
+                clientBalance = None
+        return clientBalance
 
-    def inputClientStock(self):
-        clientStock = None
-        while not clientStock:
+    def inputClientBalanceLimit(self):
+        clientBalanceLimit = None
+        while not clientBalanceLimit:
             try:
-                print "Client Stock:"
-                clientStock = int(raw_input())
+                print "Client Balance limit:"
+                clientBalanceLimit = int(raw_input())
             except ValueError:
-                clientStock = None
-        return clientStock
+                clientBalanceLimit = None
+        return clientBalanceLimit
+
+    def inputClientLastPayment(self):
+        clientLastPayment = None
+        while not clientLastPayment:
+            try:
+                print "Client's last payment date:"
+                clientLastPayment = int(raw_input())
+            except ValueError:
+                clientBalanceLimit = None
+        return clientBalanceLimit
 
     def selectClientByName(self):
         print "Input client name"
@@ -111,8 +122,8 @@ class ClientDatabase(object):
         if not client:
             print "Client %s not in databse yet!" % clientName
 
-        clientPrice = self.inputClientPrice()
-        client.price = clientPrice
+        clientBalance = self.inputClientBalance()
+        client.balance = clientBalance
 
     def changeStockAndSave(self):
         clientName = self.selectClientByName()
@@ -121,9 +132,9 @@ class ClientDatabase(object):
         if not client:
             print "Client %s not in databse yet!" % clientName
 
-        print "Current stock is %d!" % client.stock
-        clientStock = self.inputClientStock()
-        client.stock = clientStock
+        print "Current stock is %d!" % client.balancelimit
+        clientBalanceLimit = self.inputClientBalanceLimit()
+        client.balancelimit = clientBalanceLimit
 
         self.save()
 
@@ -136,8 +147,31 @@ class ClientDatabase(object):
     def stockOfAllClients(self):
         stockOfAllClients = 0
         for clientName, client in self.database.iteritems():
-            stockOfAllClients += client.stock
+            stockOfAllClients += client.balancelimit
         print "Stock of all clients is: %d" % stockOfAllClients
+
+    def blockClient(self):
+        clientName = self.selectClientByName()
+
+        try:
+            print self.database[clientName]
+        except KeyError:
+            print "Client does not exists"
+            return
+        print "Client %s blocked" % clientName
+        self.save()
+
+    def unblockClient(self):
+        clientName = self.selectClientByName()
+
+        try:
+            print self.database[clientName]
+        except KeyError:
+            print "Client does not exists"
+            return
+        print "Client %s enabled" % clientName
+        self.save()
+
 
 if __name__ == "__main__":
 
@@ -155,20 +189,24 @@ if __name__ == "__main__":
         5 : database.changePriceAndSave,
         6 : database.changePrice,
         7 : database.valueOfAllClients,
-        8 : database.stockOfAllClients
+        8 : database.stockOfAllClients,
+        9 : database.blockClient,
+        10 : database.unblockClient
     }
 
-    while (choice != 9):
+    while (choice != 11):
         print
-        print "1. Print database"
-        print "2. Add client"
-        print "3. Delete client"
-        print "4. Change stock and save"
-        print "5. Change price and save"
-        print "6. Change price"
-        print "7. Value of all clients"
-        print "8. Stock of all clients"
-        print "9. Exit"
+        print "1.  Print database"
+        print "2.  Add client"
+        print "3.  Delete client"
+        print "4.  Change stock and save"
+        print "5.  Change price and save"
+        print "6.  Change price"
+        print "7.  Value of all clients"
+        print "8.  Stock of all clients"
+        print "9.  Block client"
+        print "10. Unblock client"
+        print "11. Exit"
         print "Choose:"
         choice = raw_input()
         print
