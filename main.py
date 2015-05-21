@@ -12,15 +12,16 @@ import pickle
 # db.commit()
 
 class Client(object):
-    def __init__(self, name, code, balance, balancelimit, lastpayment):
+    def __init__(self, name, ip, code, balance, balancelimit, lastpayment):
         self.name = name
+        self.ip = ip
         self.code = code
         self.balance = balance
         self.balancelimit = balancelimit
         self.lastpayment = lastpayment
 
     def value(self):
-        return self.price*self.stock
+        return self.balance*self.balancelimit
 
 class ClientDatabase(object):
     def __init__(self, filename):
@@ -44,12 +45,15 @@ class ClientDatabase(object):
 
     def printDB(self):
         for clientName, client in self.database.iteritems():
-            print "client: %s(%s) - Price %.2f Stock %d Value %.2f" % \
-                (client.name, client.code, client.balance, client.stock, client.value())
+            print "client: %s(%s) - Ip Address %s(%s) - Balance %.2f BalanceLimit %d Value %.2f" % \
+                (client.name, client.ip, client.code, client.balance, client.balancelimit, client.lastpayment, client.value())
 
     def addClient(self):
         print "Input client name"
         clientName = raw_input()
+
+        print "Input ip address"
+        clientIp = raw_input()
 
         print "Input client code"
         clientCode = raw_input()
@@ -58,7 +62,7 @@ class ClientDatabase(object):
         clientBalanceLimit = self.inputClientBalanceLimit()
         clientLastPayment = self.inputClientLastPayment()
 
-        self.database[clientName] = Client(clientName, clientCode, clientBalance, clientBalanceLimit, clientLastPayment)
+        self.database[clientName] = Client(clientName, clientIp, clientCode, clientBalance, clientBalanceLimit, clientLastPayment)
         self.save()
 
     def inputClientBalance(self):
@@ -89,7 +93,7 @@ class ClientDatabase(object):
                 clientLastPayment = int(raw_input())
             except ValueError:
                 clientBalanceLimit = None
-        return clientBalanceLimit
+        return clientLastPayment
 
     def selectClientByName(self):
         print "Input client name"
