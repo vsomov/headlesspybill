@@ -2,6 +2,7 @@
 
 #import sqlite3
 import pickle
+import os
 
 #db = sqlite3.connect('sqlite.db')
 
@@ -124,7 +125,7 @@ class ClientDatabase(object):
 
         client = self.getClientByName(clientName)
         if not client:
-            print "Client %s not in databse yet!" % clientName
+            print "Client %s not in database yet!" % clientName
 
         clientBalance = self.inputClientBalance()
         client.balance = clientBalance
@@ -134,7 +135,7 @@ class ClientDatabase(object):
 
         client = self.getClientByName(clientName)
         if not client:
-            print "Client %s not in databse yet!" % clientName
+            print "Client %s not in database yet!" % clientName
 
         print "Current stock is %d!" % client.balancelimit
         clientBalanceLimit = self.inputClientBalanceLimit()
@@ -156,9 +157,10 @@ class ClientDatabase(object):
 
     def blockClient(self):
         clientName = self.selectClientByName()
-
         try:
-            print self.database[clientName]
+            cstate = os.popen('ipconfig')
+            cstatenow = cstate.read()
+            print cstatenow
         except KeyError:
             print "Client does not exists"
             return
